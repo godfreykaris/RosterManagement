@@ -1,0 +1,118 @@
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 502-264-672
+INFO:werkzeug:127.0.0.1 - - [14/Oct/2023 23:08:29] "[31m[1mPOST /api/register HTTP/1.1[0m" 400 -
+INFO:werkzeug: * Detected change in '/home/godfreykaris/Documents/Roster/test.py', reloading
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 502-264-672
+ERROR:root:An error occurred during registration: column "usernam" does not exist
+LINE 1: SELECT user_id, email, usernam FROM users WHERE  email = 'go...
+                               ^
+HINT:  Perhaps you meant to reference the column "users.username".
+
+INFO:werkzeug:127.0.0.1 - - [14/Oct/2023 23:09:22] "[35m[1mPOST /api/register HTTP/1.1[0m" 500 -
+INFO:werkzeug: * Detected change in '/home/godfreykaris/Documents/Roster/app.py', reloading
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 502-264-672
+ERROR:root:An error occurred during registration: column "usernam" does not exist
+LINE 1: SELECT user_id, email, usernam FROM users WHERE  email = 'go...
+                               ^
+HINT:  Perhaps you meant to reference the column "users.username".
+
+INFO:werkzeug:127.0.0.1 - - [14/Oct/2023 23:10:35] "[35m[1mPOST /api/register HTTP/1.1[0m" 500 -
+INFO:werkzeug: * Detected change in '/home/godfreykaris/Documents/Roster/app.py', reloading
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 502-264-672
+INFO:werkzeug: * Detected change in '/home/godfreykaris/Documents/Roster/app.py', reloading
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 502-264-672
+INFO:werkzeug: * Detected change in '/home/godfreykaris/Documents/Roster/app.py', reloading
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 502-264-672
+INFO:werkzeug: * Detected change in '/home/godfreykaris/Documents/Roster/app.py', reloading
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 502-264-672
+INFO:werkzeug: * Detected change in '/home/godfreykaris/Documents/Roster/test.py', reloading
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 502-264-672
+ERROR:root:An error occurred during registration: column "usernam" does not exist
+LINE 1: SELECT user_id, email, usernam FROM users WHERE  email = 'go...
+                               ^
+HINT:  Perhaps you meant to reference the column "users.username".
+
+INFO:werkzeug:127.0.0.1 - - [14/Oct/2023 23:11:57] "[35m[1mPOST /api/register HTTP/1.1[0m" 500 -
+INFO:werkzeug: * Detected change in '/home/godfreykaris/Documents/Roster/test.py', reloading
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 502-264-672
+ERROR:root:An error occurred during registration: column "usernam" does not exist
+LINE 1: SELECT user_id, email, usernam FROM users WHERE  email = 'go...
+                               ^
+HINT:  Perhaps you meant to reference the column "users.username".
+
+INFO:werkzeug:127.0.0.1 - - [14/Oct/2023 23:12:16] "[35m[1mPOST /api/register HTTP/1.1[0m" 500 -
+INFO:werkzeug: * Detected change in '/home/godfreykaris/Documents/Roster/test.py', reloading
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 502-264-672
+INFO:werkzeug: * Detected change in '/home/godfreykaris/Documents/Roster/test.py', reloading
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 502-264-672
+INFO:werkzeug:127.0.0.1 - - [14/Oct/2023 23:12:45] "[31m[1mPOST /api/register HTTP/1.1[0m" 400 -
+INFO:werkzeug: * Detected change in '/home/godfreykaris/Documents/Roster/test.py', reloading
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 502-264-672
+INFO:werkzeug:127.0.0.1 - - [14/Oct/2023 23:12:59] "[31m[1mPOST /api/register HTTP/1.1[0m" 400 -
+INFO:werkzeug: * Detected change in '/home/godfreykaris/Documents/Roster/test.py', reloading
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 502-264-672
+ERROR:root:An error occurred during registration: column "usernam" does not exist
+LINE 1: SELECT user_id, email, usernam FROM users WHERE  email = 'yo...
+                               ^
+HINT:  Perhaps you meant to reference the column "users.username".
+
+INFO:werkzeug:127.0.0.1 - - [14/Oct/2023 23:13:16] "[35m[1mPOST /api/register HTTP/1.1[0m" 500 -
+INFO:werkzeug: * Detected change in '/home/godfreykaris/Documents/Roster/test.py', reloading
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 502-264-672
+INFO:werkzeug: * Detected change in '/home/godfreykaris/Documents/Roster/modules/user/register.py', reloading
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 502-264-672
+INFO:werkzeug: * Detected change in '/home/godfreykaris/Documents/Roster/app.py', reloading
+INFO:werkzeug: * Restarting with stat
+INFO:werkzeug: * Restarting with stat
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 502-264-672
+INFO:werkzeug: * Detected change in '/home/godfreykaris/Documents/Roster/app.py', reloading
+INFO:werkzeug: * Restarting with stat
+INFO:werkzeug: * Restarting with stat
+INFO:werkzeug: * Restarting with stat
+INFO:werkzeug: * Restarting with stat
+INFO:werkzeug: * Restarting with stat
+INFO:werkzeug: * Restarting with stat
+INFO:werkzeug: * Restarting with stat
+INFO:werkzeug: * Restarting with stat
+INFO:werkzeug: * Restarting with stat
+INFO:werkzeug: * Restarting with stat
+INFO:werkzeug: * Restarting with stat
+INFO:werkzeug: * Restarting with stat
+INFO:werkzeug: * Restarting with stat
+INFO:werkzeug: * Restarting with stat
+INFO:werkzeug: * Restarting with stat
+INFO:werkzeug: * Restarting with stat
