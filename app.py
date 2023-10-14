@@ -6,10 +6,11 @@ import logging
 from dotenv import load_dotenv
 load_dotenv()
 
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, session, jsonify, render_template, redirect, url_for
 from datetime import timedelta
 from flask_login import LoginManager, UserMixin, current_user, login_required,  login_user, logout_user
 from flask_wtf.csrf import CSRFProtect, generate_csrf
+from flask_mail import Mail
 from werkzeug.security import generate_password_hash
 
 # custom module imports
@@ -17,13 +18,15 @@ from modules.database_initialier import DatabaseInitializer
 from modules.user.login import UserLogin
 from modules.user.user_retriever import UserHandler
 from modules.password.password import PasswordReset
-from modules.user.google_login import app as google_authen_app
 
+# Import Facebook and Google login classes
+from modules.user.facebook_login import FacebookAuth
+from modules.user.google_login import GoogleAuth
 
 # create a flask application
 app = Flask(__name__)
 
-app.register_blueprint(google_authen_app)
+mail = Mail(app)
 
 app.config.update(
     DEBUG=True,
@@ -43,6 +46,9 @@ csrf = CSRFProtect(app)
 
 app.config['PARMANENT_SESSION_LIFETIME'] = timedelta(hours=24)
 
+# set the static folder relative to the project directory
+static_folder_path = os.path.join(os.path.dirname(__file__), 'roster-react', 'build')
+app.static_folder = static_folder_path
 
 #configure flask-mail for sending emails
 app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER')  # Use your email provider's mail server
@@ -52,15 +58,22 @@ app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')  # Your email address
 app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')  # Your email password
 app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_DEFAULT_SENDER')  # Default sender for emails
 
+# Initialize FacebookLogin and GoogleLogin
+facebook_auth = FacebookAuth()
+google_auth = GoogleAuth(app=app)
 
 #initialize the database connection
 database_initializer = DatabaseInitializer()
-password_reset = PasswordReset()
+password_reset = PasswordReset(mail)
 
+# Start
 @app.route('/')
 def hello():
-    return render_template('index.html')
+    root_url = request.url_root
+    return "Hello World <a href='/google/'><button>Login</button></a>"
+    # return render_template('index.html', root_url=root_url)
 
+# Normal Login start
 class User(UserMixin):
     def __init__(self, id):
         self.id = id
@@ -88,7 +101,7 @@ def load_user(id:int):
     
     return None
 
-@app.route('/api/login', methods=['POST'])
+@app.route('/api/login', methods=['GET', 'POST'])
 def login():
     try:
         # Create an instance of UserLogin with the database connection
@@ -109,13 +122,38 @@ def login():
         print(str(e))
          # Handle any exceptions that may occur and return as JSON
         return jsonify({'error': str(e)}), 500
+    
+# Normal Login end
+
+# Google auth start  
+@app.route('/google/', methods=['GET', 'POST'])
+def google():
+    return google_auth.login()
+
+@app.route('/google/auth/')
+def google_auth_route():
+    return google_auth.callback()
+
+# Google auth end
+
+# Facebook auth start
+@app.route('/facebook/', methods=['POST', 'GET'])
+def facebook():
+    return facebook_auth.login()
+
+@app.route('/facebook/auth/', methods=['POST'])
+def facebook_auth_route():
+    return facebook_auth.callback()
+
+# Facebook auth start
 
 # route for user logout
-@app.route('/api/logout')
+@app.route('/api/logout', methods=['POST'])
 @login_required
 def logout():
+    session.clear()
     logout_user()
-    return jsonify({'logout': True})
+    return redirect(url_for('/'))
 
 
 #reset password
