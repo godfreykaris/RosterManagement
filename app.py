@@ -15,15 +15,20 @@ from werkzeug.security import generate_password_hash
 # custom module imports
 from modules.database_initialier import DatabaseInitializer
 from modules.user.login import UserLogin
+from modules.user.register import UserRegistration
 from modules.user.user_retriever import UserHandler
-from modules.password.password import PasswordReset
-from modules.user.google_login import app as google_authen_app
+#from modules.password.password import PasswordReset
+# from modules.user.google_login import app as google_authen_app
 
 
 # create a flask application
 app = Flask(__name__)
 
-app.register_blueprint(google_authen_app)
+# Configure the logger
+# logging.basicConfig(filename='app.log', level=logging.DEBUG) #Log to file
+logging.basicConfig(level=logging.DEBUG) #Log to terminal
+
+# app.register_blueprint(google_authen_app)
 
 app.config.update(
     DEBUG=True,
@@ -39,7 +44,7 @@ login_manager.session_protection = "strong"
 login_manager.needs_refresh_message = (u"Session timedout, please login again")
 login_manager.needs_refresh_message_category = "info"
 
-csrf = CSRFProtect(app)
+# csrf = CSRFProtect(app) For Testing only
 
 app.config['PARMANENT_SESSION_LIFETIME'] = timedelta(hours=24)
 
@@ -55,7 +60,7 @@ app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_DEFAULT_SENDER')  # Default 
 
 #initialize the database connection
 database_initializer = DatabaseInitializer()
-password_reset = PasswordReset()
+# password_reset = PasswordReset()
 
 @app.route('/')
 def hello():
@@ -119,64 +124,75 @@ def logout():
 
 
 #reset password
-@app.route('/api/reset_password', methods=['POST'])
-def reset_password():
-    try:
-        data = request.get_json()
-        email = data.get('email')
+# @app.route('/api/reset_password', methods=['POST'])
+# def reset_password():
+#     try:
+#         data = request.get_json()
+#         email = data.get('email')
         
-        # Check if email and phone_number are provided
-        if not email:
-            return jsonify({'message': 'Invalid input data'}), 400
+#         # Check if email and phone_number are provided
+#         if not email:
+#             return jsonify({'message': 'Invalid input data'}), 400
         
         
-        # Get a database connection using a context manager
-        with database_initializer.get_database_connection() as conn:
-            with conn.cursor() as cursor:
-                # Check if the user exists in the database
-                user_query = """
-                    SELECT name
-                    FROM users
-                    WHERE email = %s
-                """
-                cursor.execute(user_query, (email,))
-                user = cursor.fetchone()
+#         # Get a database connection using a context manager
+#         with database_initializer.get_database_connection() as conn:
+#             with conn.cursor() as cursor:
+#                 # Check if the user exists in the database
+#                 user_query = """
+#                     SELECT name
+#                     FROM users
+#                     WHERE email = %s
+#                 """
+#                 cursor.execute(user_query, (email,))
+#                 user = cursor.fetchone()
                 
-                if not user:
-                    return jsonify({'message': 'User not found!'}), 404
+#                 if not user:
+#                     return jsonify({'message': 'User not found!'}), 404
                 
-                user_name = user[0]
+#                 user_name = user[0]
                 
-                # Generate a new password
-                new_password = password_reset.generate_password(8)
-                new_pswd_hash = generate_password_hash(new_password)
+#                 # Generate a new password
+#                 new_password = password_reset.generate_password(8)
+#                 new_pswd_hash = generate_password_hash(new_password)
                 
-                # Update the user's password in the database
-                update_password = """
-                    UPDATE users
-                    SET password_hash = %s
-                    WHERE email = %s
-                """
-                cursor.execute(update_password, (new_pswd_hash, email,))
+#                 # Update the user's password in the database
+#                 update_password = """
+#                     UPDATE users
+#                     SET password_hash = %s
+#                     WHERE email = %s
+#                 """
+#                 cursor.execute(update_password, (new_pswd_hash, email,))
                 
-                # Commit the transaction
-                conn.commit()
+#                 # Commit the transaction
+#                 conn.commit()
                 
-                if cursor.rowcount == 0:
-                    return jsonify({'message': 'Failed to update password'}), 500
+#                 if cursor.rowcount == 0:
+#                     return jsonify({'message': 'Failed to update password'}), 500
                 
-                # Send password reset email
-                try:
-                    password_reset.send_password_reset_email(email, new_password, user_name)
-                except Exception as e:
-                    logging.error(f"Failed to send password reset email: {str(e)}")
-                    return jsonify({'error': 'Failed to send password reset email'}), 500
+#                 # Send password reset email
+#                 try:
+#                     password_reset.send_password_reset_email(email, new_password, user_name)
+#                 except Exception as e:
+#                     logging.error(f"Failed to send password reset email: {str(e)}")
+#                     return jsonify({'error': 'Failed to send password reset email'}), 500
                 
-                return jsonify({'message': 'Password reset was successful'}), 200
+#                 return jsonify({'message': 'Password reset was successful'}), 200
     
-    except psycopg2.Error as e:
-        return jsonify({'error': 'Network error while trying to reset password'}), 500
+#     except psycopg2.Error as e:
+#         return jsonify({'error': 'Network error while trying to reset password'}), 500
 
+
+# route for user registration
+@app.route('/api/register', methods=['POST'])
+def register():
+    try:
+        userRegistrar = UserRegistration(database_initializer=database_initializer)
+        return userRegistrar.register_user()
+    
+    except Exception as e:
+        logging.error('An error occurred during registration: %s', str(e))
+        return jsonify({'error': 'An error occurred during registration.'}), 500
 
 
 if __name__ == '__main__':
