@@ -16,6 +16,7 @@ from werkzeug.security import generate_password_hash
 # custom module imports
 from modules.database_initialier import DatabaseInitializer
 from modules.user.login import UserLogin
+from modules.user.register import UserRegistration
 from modules.user.user_retriever import UserHandler
 from modules.password.password import PasswordReset
 
@@ -42,7 +43,7 @@ login_manager.session_protection = "strong"
 login_manager.needs_refresh_message = (u"Session timedout, please login again")
 login_manager.needs_refresh_message_category = "info"
 
-csrf = CSRFProtect(app)
+# csrf = CSRFProtect(app) For Testing only
 
 app.config['PARMANENT_SESSION_LIFETIME'] = timedelta(hours=24)
 
@@ -156,7 +157,7 @@ def logout():
     return redirect(url_for('/'))
 
 
-#reset password
+# reset password
 @app.route('/api/reset_password', methods=['POST'])
 def reset_password():
     try:
@@ -215,6 +216,17 @@ def reset_password():
     except psycopg2.Error as e:
         return jsonify({'error': 'Network error while trying to reset password'}), 500
 
+
+# route for user registration
+@app.route('/api/register', methods=['POST'])
+def register():
+    try:
+        userRegistrar = UserRegistration(database_initializer=database_initializer)
+        return userRegistrar.register_user()
+    
+    except Exception as e:
+        logging.error('An error occurred during registration: %s', str(e))
+        return jsonify({'error': 'An error occurred during registration.'}), 500
 
 
 if __name__ == '__main__':
