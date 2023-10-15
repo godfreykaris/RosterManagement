@@ -28,17 +28,17 @@ class UserRegistration:
             missing_fields.append('confirmPassword')
         
         if missing_fields:
-            return jsonify({'message': f'Missing fields: {", ".join(missing_fields)}'}), 400
+            return jsonify({'error': f'Missing fields: {", ".join(missing_fields)}'}), 400
         
          # Validate the email format
         try:
             email_validator.validate_email(email)
         except email_validator.EmailNotValidError:
-            return jsonify({'message': 'Invalid email format'}), 400
+            return jsonify({'error': 'Invalid email format'}), 400
         
         # Make sure the password is confirmed correctly
         if password != confirmPassword:
-            return jsonify({'message': 'Password confirmation failed'}), 400
+            return jsonify({'error': 'Password confirmation failed'}), 400
 
 
         try:
@@ -56,9 +56,9 @@ class UserRegistration:
                 if existing_record:
                     # Make sure the username and email are unique
                     if existing_record[1] == email:
-                        return jsonify({'message': 'The email is taken'}), 400   
+                        return jsonify({'error': 'The email is taken'}), 400   
                     else:
-                        return jsonify({'message': 'The username is taken'}), 400   
+                        return jsonify({'error': 'The username is taken'}), 400   
     
                 else:
                     # No existing record found; insert a new one
@@ -72,7 +72,7 @@ class UserRegistration:
         except Exception as e:
             # Log the error for debugging purposes
             logging.error('An error occurred during registration: %s', str(e))
-            return jsonify({'message': 'An error occured. Please contact support.'}), 500
+            return jsonify({'error': 'An internal error occurred. Please contact support.'}), 500
         finally:
             cursor.close()
             database_connection.close()

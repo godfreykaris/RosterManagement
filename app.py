@@ -226,7 +226,7 @@ def register():
     
     except Exception as e:
         logging.error('An error occurred during registration: %s', str(e))
-        return jsonify({'error': 'An error occurred during registration.'}), 500
+        return jsonify({'error': 'An error occurred during registration. Please contact support if it persists.'}), 500
 
 
 if __name__ == '__main__':
