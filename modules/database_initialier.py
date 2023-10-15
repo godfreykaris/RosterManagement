@@ -1,4 +1,7 @@
 import os
+import logging
+from flask import jsonify
+
 import psycopg2
 from psycopg2 import OperationalError
 
@@ -20,5 +23,6 @@ class DatabaseInitializer:
             return conn
         
         except OperationalError as e:
-            print(f"Error: {e}")
-            print("PostgreSQL connection failed")
+            # Log the error for debugging purposes
+            logging.error('Could not connect to the database: %s', str(e))
+            return jsonify({'message': 'An internal error occurred. Please contact support.'}), 500
