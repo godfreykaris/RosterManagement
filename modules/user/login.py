@@ -19,12 +19,12 @@ class UserLogin:
             database_connection = self.database_initializer.get_database_connection()
             cursor = database_connection.cursor()
             
-            cursor.execute("SELECT user_id, email, password_hash FROM users WHERE email = %s;", (email,))
+            cursor.execute("SELECT user_id, user_level, email, password_hash FROM users WHERE email = %s;", (email,))
             user = cursor.fetchone()
             
             if user and check_password_hash(user[2], password):
                 # Authentication successful
-                return jsonify({'message': 'Login successful', 'user_id': user[0], 'status': 200})
+                return jsonify({'message': 'Login successful', 'user_id': user[0], 'user_level': user[1], 'status': 200})
             else:
                 # Authentication failed
                 return jsonify({'message': 'Authentication failed', 'status': 401})

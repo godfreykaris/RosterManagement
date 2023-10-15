@@ -1,8 +1,13 @@
 import random
 import string
+import logging
+import psycopg2
 
 from flask_mail import Message
-from flask import jsonify
+from flask import request
+
+from shared import error_response, success_response
+from werkzeug.security import generate_password_hash
 
 class PasswordReset:
     def __init__(self, mail):
@@ -42,4 +47,62 @@ class PasswordReset:
             self.mail.send(msg)
 
         except Exception as e:
-            return jsonify({'message': 'An error occurred while sending the email'})
+            return error_response('An error occurred while sending the email', 400)
+        
+        
+    def reset_password(self):
+        try:
+            data = request.get_json()
+            email = data.get('email')
+
+            # Check if email and phone_number are provided
+            if not email:
+                return error_response('Invalid input data', 400)            
+            
+            # Check if the user exists in the database
+            user_query = """
+                SELECT name
+                FROM users
+                WHERE email = %s
+            """            
+            params = (email,)
+            fetch = True  # We are fetching data
+            fetchall = False  # Fetch all records
+            user = self.database_initializer.perform_database_operation(user_query, params, fetch, fetchall)
+        
+            if not user:
+                return error_response('User not found!', 400)
+            
+            user_name = user[0]
+
+            # Generate a new password
+            new_password = self.generate_password(8)
+            new_pswd_hash = generate_password_hash(new_password)
+            
+            # Update the user's password in the database
+            update_password = """
+                UPDATE users
+                SET password_hash = %s
+                WHERE email = %s
+            """
+
+            params = (new_pswd_hash, email,)
+            fetch = False  # We are fetching data
+            fetchall = False  # Fetch all records
+            
+            if not self.database_initializer.perform_database_operation(update_password, params, fetch, fetchall):
+                return error_response('Failed to update password', 500)
+            
+            # Send password reset email
+            try:
+                self.send_password_reset_email(email, new_password, user_name)
+            except Exception as e:
+                logging.error(f"Failed to send password reset email: {str(e)}")
+                return error_response('Failed to send password reset email', 500)
+            
+            return success_response('Password reset was successful', 200)
+        
+        except psycopg2.Error as e:
+            return error_response('Network error while trying to reset password', 500)
+
+            
