@@ -2,37 +2,39 @@ import requests
 
 #********************* Start of register testing *******************************#
 
-# # Define the URL for the registration endpoint
-# url = 'http://localhost:5000/api/register'
+# Define the URL for the registration endpoint
+url = 'http://localhost:5000/api/register'
 
-# # Define the data you want to send as a dictionary
-# data = {
-#     'username': 'miami3d',
-#     'email': 'iam@gmail.com',
-#     'password': 'iampassword12',
-#     'confirmPassword': 'iampassword12'  # Confirm password can be the same as the password
-# }
+# Define the data you want to send as a dictionary
+data = {
+    'user_level': 2,
+    'username': 'jacko3d',
+    'email': 'jacko@gmail.com',
+    'team_name': 'Bull',
+    'password': 'iampassword12',
+    'confirm_password': 'iampassword12'  # Confirm password can be the same as the password
+}
 
 #*************************** End of register testing ********************************#
 
 #*************************** Start of update profile ********************************#
 
 # Define the URL for the registration endpoint
-url = 'http://localhost:5000/api/update_profile'
+# url = 'http://localhost:5000/api/update_profile'
 
-# Define the data you want to send as a dictionary
-data = {
-    'user_id': 1,
-    'user_level': '2', # User levels 3 - admin, 2 - coach, 1 - wrestler
-    'username': 'miami8',
-    'email': 'weare@gmail.com',
-    'name': 'Me3',
-    'address': "80345 Newyork City",
-    'password': 'iampassword12',
-    'confirm_password': 'iampassword12',  # Confirm password can be the same as the password
-    'weight': 50.5, # Weight in Kgs
-    'team': 'Wagon'
-}
+# # Define the data you want to send as a dictionary
+# data = {
+#     'user_id': 1,
+#     'user_level': '2', # User levels 3 - admin, 2 - coach, 1 - wrestler
+#     'username': 'miami8',
+#     'email': 'weare@gmail.com',
+#     'name': 'Me3',
+#     'address': "80345 Newyork City",
+#     'password': 'iampassword12',
+#     'confirm_password': 'iampassword12',  # Confirm password can be the same as the password
+#     'weight': 50.5, # Weight in Kgs
+#     'team': 'Wagon'
+# }
 
 #***************************** End of update profile ****************************#
 
