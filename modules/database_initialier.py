@@ -34,6 +34,7 @@ class DatabaseInitializer:
     def perform_database_operation(self, query, params=None, fetch=False, fetchall=False):
         try:
             with self.get_database_connection() as database_connection:
+            
                 cursor = database_connection.cursor()
                 cursor.execute(query, params)
                 if fetch:
@@ -43,11 +44,16 @@ class DatabaseInitializer:
                         result = cursor.fetchone()  # Fetch one record
                     return result
                 else:
+                    try:
+                        affected_rows = cursor.fetchall()
+                    except psycopg2.ProgrammingError:
+                        affected_rows = ()
+
                     database_connection.commit()
-                return True
+                return True, affected_rows
         except Exception as e:
             logging.error(f'An error occurred during database operation: {str(e)}, Traceback: {traceback.format_exc()}')
-            return False
+            return False, None
         finally:
             if not fetch:
                 cursor.close()
