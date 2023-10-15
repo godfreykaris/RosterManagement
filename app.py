@@ -240,6 +240,9 @@ def update_profile():
     except Exception as e:
         logging.error('An error occurred during profile update: %s', str(e))
         return error_response('An error occurred during profile update. Please contact support if it persists.', 500)
+    
+
+app.ro
 
 
 if __name__ == '__main__':
