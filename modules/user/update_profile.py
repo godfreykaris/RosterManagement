@@ -4,7 +4,7 @@ from werkzeug.security import generate_password_hash
 
 import logging
 
-from shared import validate_email_format, success_response, error_response
+from shared import validate_email_format, success_response, error_response, is_duplicate_record
 
 class UpdateProfile:
     def __init__(self, database_initializer):
@@ -39,8 +39,8 @@ class UpdateProfile:
         if not user_data:
             return error_response(error, 400)
 
-        # Check for an existing record
-        exists, found_user_level, error = self.is_existing_record(user_data, user_id)
+        # Check for an duplicate record
+        exists, found_user_level, error = is_duplicate_record(self.database_initializer, user_data, user_id)
         if exists:
             return error_response(error, 400)
 
@@ -101,9 +101,12 @@ class UpdateProfile:
             missing_fields.append("team")
 
         if missing_fields:
-            return None, error_response(f'Missing or invalid fields: {", ".join(missing_fields)}', 400)
+            return None, f'Missing or invalid fields: {", ".join(missing_fields)}'
 
-    
+         # Validate the email format
+        if validate_email_format(email):
+            return None, 'Invalid email format'
+            
         # If all validations pass, populate the params dictionary
         user_data['user_id'] = user_id
         user_data['username'] = username
@@ -118,21 +121,7 @@ class UpdateProfile:
         # Return the validated parameters as a dictionary
         return user_data, None
 
-    def is_existing_record(self, user_data, user_id):
-        
-        select_query =  "SELECT user_id, email, username, user_level FROM users WHERE  email = %s OR username= %s;"
-        params = (user_data['email'], user_data['username'])
-        fetch = True # we are fetching data
-        fetchall = False # fetch only one record
-        existing_record = self.database_initializer.perform_database_operation(select_query, params, fetch, fetchall)
-
-        # Was a record with the same details found?
-        if existing_record and existing_record[0] != user_id:
-            # Make sure the username and email are unique
-            if existing_record[1] == user_data['email']:
-                return True, None, 'The email is taken'
-            else:
-                return True, None, 'The username is taken'
+    
         
         # Get the record of the found user level for use when users 
         # update profiles of other users e.g. Coach updating wrestler
@@ -151,20 +140,20 @@ class UpdateProfile:
               if user_data['password']: # User updating profile as well as changing their password
                   if current_user_level == 3: # Admin
                       update_query = "UPDATE users SET username = %s, email = %s, name = %s, address = %s, password_hash = %s WHERE user_id = %s;"
-                      params = (user_data['username'], user_data['email'], user_data['name'], user_data['address'] ,generate_password_hash(user_data['password']), user_id)
+                      params = (user_data['username'], user_data['email'], user_data['name'], user_data['address'] ,generate_password_hash(user_data['password']), user_id,)
                   else:
                       update_query = "UPDATE users SET username = %s, email = %s, weight = %s, name = %s, address = %s, password_hash = %s WHERE user_id = %s;"
-                      params = (user_data['username'], user_data['email'], user_data['weight'], user_data['name'], user_data['address'] ,generate_password_hash(user_data['password']), user_id)
+                      params = (user_data['username'], user_data['email'], user_data['weight'], user_data['name'], user_data['address'] ,generate_password_hash(user_data['password']), user_id,)
               else: # User updating profile but not changing password
                   if current_user_level == 3: # Admin
                       update_query = "UPDATE users SET username = %s, email = %s, name = %s, address = %s, WHERE user_id = %s;"
-                      params = (user_data['username'], user_data['email'], user_data['name'], user_data['address'], user_id)
+                      params = (user_data['username'], user_data['email'], user_data['name'], user_data['address'], user_id,)
                   else:
                       update_query = "UPDATE users SET username = %s, email = %s, weight = %s, name = %s, address = %s, WHERE user_id = %s;"
-                      params = (user_data['username'], user_data['email'], user_data['weight'], user_data['name'], user_data['address'], user_id)
+                      params = (user_data['username'], user_data['email'], user_data['weight'], user_data['name'], user_data['address'], user_id,)
           else: # Coach updating the wrestler profile or admin updating coach profile
               update_query = "UPDATE users SET username = %s, email = %s, weight = %s, name = %s, address = %s, team = %s WHERE user_id = %s;"
-              params = (user_data['username'], user_data['email'], user_data['weight'], user_data['name'], user_data['address'] , user_data['team'], user_id)
+              params = (user_data['username'], user_data['email'], user_data['weight'], user_data['name'], user_data['address'] , user_data['team'], user_id,)
           
           return update_query, params, None          
           
