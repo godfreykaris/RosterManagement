@@ -1,6 +1,5 @@
 import os
 import json
-import psycopg2
 import logging
 
 from dotenv import load_dotenv
@@ -11,7 +10,6 @@ from datetime import timedelta
 from flask_login import LoginManager, UserMixin, current_user, login_required,  login_user, logout_user
 from flask_wtf.csrf import CSRFProtect, generate_csrf
 from flask_mail import Mail
-from werkzeug.security import generate_password_hash
 
 # custom module imports
 from modules.database_initialier import DatabaseInitializer
@@ -78,11 +76,15 @@ def hello():
 
 # Normal Login start
 class User(UserMixin):
-    def __init__(self, id):
+    def __init__(self, id, user_level):
         self.id = id
+        self.user_level = user_level        
     
     def get_id(self):
         return str(self.id)
+    
+    def get_user_level(self):
+        return int(self.user_level)
     
 
 @login_manager.user_loader
@@ -116,8 +118,9 @@ def login():
             response_data = result.json
             # Access specific properties from the response
             user_id = response_data['user_id']
+            user_level = response_data['user_level']
             # Use Flask-Login's login_user function to set the current_user
-            login_user(User(int(user_id), ""))
+            login_user(User(int(user_id), int(user_level)))
 
         return result, status
     
@@ -162,61 +165,7 @@ def logout():
 # reset password
 @app.route('/api/reset_password', methods=['POST'])
 def reset_password():
-    try:
-        data = request.get_json()
-        email = data.get('email')
-        
-        # Check if email and phone_number are provided
-        if not email:
-            return jsonify({'message': 'Invalid input data'}), 400
-        
-        
-        # Get a database connection using a context manager
-        with database_initializer.get_database_connection() as conn:
-            with conn.cursor() as cursor:
-                # Check if the user exists in the database
-                user_query = """
-                    SELECT name
-                    FROM users
-                    WHERE email = %s
-                """
-                cursor.execute(user_query, (email,))
-                user = cursor.fetchone()
-                
-                if not user:
-                    return jsonify({'message': 'User not found!'}), 404
-                
-                user_name = user[0]
-                
-                # Generate a new password
-                new_password = password_reset.generate_password(8)
-                new_pswd_hash = generate_password_hash(new_password)
-                
-                # Update the user's password in the database
-                update_password = """
-                    UPDATE users
-                    SET password_hash = %s
-                    WHERE email = %s
-                """
-                cursor.execute(update_password, (new_pswd_hash, email,))
-                
-                # Commit the transaction
-                conn.commit()
-                
-                if cursor.rowcount == 0:
-                    return jsonify({'message': 'Failed to update password'}), 500
-                
-                # Send password reset email
-                try:
-                    password_reset.send_password_reset_email(email, new_password, user_name)
-                except Exception as e:
-                    logging.error(f"Failed to send password reset email: {str(e)}")
-                    return jsonify({'error': 'Failed to send password reset email'}), 500
-                
-                return jsonify({'message': 'Password reset was successful'}), 200
-    
-    except psycopg2.Error as e:
-        return jsonify({'error': 'Network error while trying to reset password'}), 500
+    return password_reset.reset_password()
 
 
 # route for user registration
@@ -241,9 +190,33 @@ def update_profile():
         logging.error('An error occurred during profile update: %s', str(e))
         return error_response('An error occurred during profile update. Please contact support if it persists.', 500)
     
+# Fetch a user
+app.route('/api/fetch_user/<int:user_id>')
+def fetch_user(user_id):
+    user_handler = UserHandler(database_initializer=database_initializer)
+    return user_handler.get_user(user_id=user_id)
 
-app.ro
+# Fetch coaches
+app.route('/api/fetch_coaches')
+def fetch_coaches():
+    user_handler = UserHandler(database_initializer=database_initializer)
+    return user_handler.get_coaches()
 
+# Fetch wrestlers
+app.route('/api/fetch_wrestlers/<int:team_id>')
+def fetch_wrestlers(team_id):
+    user_handler = UserHandler(database_initializer=database_initializer)
+    return user_handler.get_wrestlers(team_id=team_id)
+
+# Route to delete a user
+app.route('/api/delete_user/<int:user_id>/<int:user_level>')
+def delete_user(user_id, user_level):
+    user_handler = UserHandler(database_initializer=database_initializer)
+    
+    if current_user.user_level > user_level:
+        return error_response('You have no permission to delete this user', 400)
+    
+    return user_handler.delete_user(user_id=user_id)
 
 if __name__ == '__main__':
     app.run(debug=True)
