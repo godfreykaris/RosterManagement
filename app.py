@@ -17,6 +17,8 @@ from werkzeug.security import generate_password_hash
 from modules.database_initialier import DatabaseInitializer
 from modules.user.login import UserLogin
 from modules.user.register import UserRegistration
+from modules.user.update_profile import UpdateProfile
+from shared import success_response, error_response
 from modules.user.user_retriever import UserHandler
 from modules.password.password import PasswordReset
 
@@ -226,6 +228,7 @@ def register():
     
     except Exception as e:
         logging.error('An error occurred during registration: %s', str(e))
+<<<<<<< HEAD
         return jsonify({'error': 'An error occurred during registration.'}), 500
     
     
@@ -254,6 +257,20 @@ def fetch_data():
                     return jsonify({'message': 'No coaches found'})
         
     return
+=======
+        return error_response('An error occurred during registration. Please contact support if it persists.', 500)
+    
+# route for user registration
+@app.route('/api/update_profile', methods=['POST'])
+def update_profile():
+    try:
+        profile_updater = UpdateProfile(database_initializer=database_initializer)
+        return profile_updater.update_profile()
+    
+    except Exception as e:
+        logging.error('An error occurred during profile update: %s', str(e))
+        return error_response('An error occurred during profile update. Please contact support if it persists.', 500)
+>>>>>>> origin/main
 
 
 if __name__ == '__main__':
