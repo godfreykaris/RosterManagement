@@ -227,6 +227,33 @@ def register():
     except Exception as e:
         logging.error('An error occurred during registration: %s', str(e))
         return jsonify({'error': 'An error occurred during registration.'}), 500
+    
+    
+    
+# route for fetching data
+@app.route('/api/fetch_coaches', methods=['GET'])
+def fetch_data():
+    try:
+        with database_initializer.get_database_connection() as conn:
+            with conn.cursor() as cursor:
+                # fetc coaches
+                
+                coaches_query = """
+                    SELECT name, email, ...
+                    FROM users
+                    WHERE id = %s
+                """
+                
+                cursor.execute(coaches_query, (2,))
+                coaches = cursor.fetchall()
+                                
+                if not coaches:
+                    return jsonify({'message': 'Error fetching coaches'})
+                
+                if len(coaches) == 0:
+                    return jsonify({'message': 'No coaches found'})
+        
+    return
 
 
 if __name__ == '__main__':
