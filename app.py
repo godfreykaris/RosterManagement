@@ -191,25 +191,25 @@ def update_profile():
         return error_response('An error occurred during profile update. Please contact support if it persists.', 500)
     
 # Fetch a user
-app.route('/api/fetch_user/<int:user_id>')
+app.route('/api/fetch_user/<int:user_id>', methods=['GET'])
 def fetch_user(user_id):
-    user_handler = UserHandler(database_initializer=database_initializer)
-    return user_handler.get_user(user_id=user_id)
+    user_handler = UserHandler(database_initializer)
+    return user_handler.get_user(user_id)
 
 # Fetch coaches
-app.route('/api/fetch_coaches')
+app.route('/api/fetch_coaches', methods=['GET'])
 def fetch_coaches():
     user_handler = UserHandler(database_initializer=database_initializer)
     return user_handler.get_coaches()
 
 # Fetch wrestlers
-app.route('/api/fetch_wrestlers/<int:team_id>')
+app.route('/api/fetch_wrestlers/<int:team_id>', methods=['GET'])
 def fetch_wrestlers(team_id):
     user_handler = UserHandler(database_initializer=database_initializer)
     return user_handler.get_wrestlers(team_id=team_id)
 
 # Route to delete a user
-app.route('/api/delete_user/<int:user_id>/<int:user_level>')
+app.route('/api/delete_user/<int:user_id>/<int:user_level>', methods=['POST'])
 def delete_user(user_id, user_level):
     user_handler = UserHandler(database_initializer=database_initializer)
     

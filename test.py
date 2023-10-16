@@ -1,5 +1,4 @@
-import requests
-
+#import requests
 # #********************* Start of register testing *******************************#
 
 # # # Define the URL for the registration endpoint
@@ -67,17 +66,17 @@ import requests
 # }
 
 ############################### UserRetriever class ####################################
-
+import requests
 # Replace with the actual URL of your Flask app
-# base_url = 'http://localhost:5000'  # Update with your app's URL
+base_url = 'http://localhost:5000'  # Update with your app's URL
 
-# user_id = 1  # Replace with the user_id you want to fetch
+user_id = 8  # Replace with the user_id you want to fetch
 
-# response = requests.get(f'{base_url}/api/fetch_user/{user_id}')
+response = requests.get(f'{base_url}/api/fetch_user/{user_id}')
 
-# # Print the response
-# print(response.status_code)
-# print(response.json())  # Assuming the response is in JSON format
+# Print the response
+print(response.status_code)
+print(response.json())  # Assuming the response is in JSON format
 
 
 
