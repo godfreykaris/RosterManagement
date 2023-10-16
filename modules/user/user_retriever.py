@@ -51,13 +51,14 @@ class UserHandler:
                         u.email AS coach_email,
                         u.team_id AS coach_team,
                         u.address AS coach_address,
-                        u.user_level AS coach_user_level
-                        t.name,
+                        u.user_level AS coach_user_level,  # Add a comma here
+                        t.name,  # Add a comma here
                         t.team_id
                     FROM users u
                     LEFT JOIN teams t ON u.team_id = t.team_id
                     WHERE u.user_id = %s
                 """
+
                 params = (user_id,)  # Use a tuple with the user_id to fetch
                 fetch = True  # We are fetching data
                 fetchall = False  # Fetch one record
@@ -90,7 +91,7 @@ class UserHandler:
                 u.email AS coach_email,
                 u.team_id AS coach_team,
                 u.address AS coach_address,
-                u.user_level AS coach_user_level
+                u.user_level AS coach_user_level,
                 t.name,
                 t.team_id
             FROM users u
